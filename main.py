@@ -821,3 +821,11 @@ def menu_prestamos(app):
         
         elif opcion == 0:
             break
+        
+# Función principal
+def main():
+    app = BibliotecaApp()
+    menu_principal(app)
+
+if __name__ == "__main__":
+    main()
