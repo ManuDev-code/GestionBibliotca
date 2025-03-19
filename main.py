@@ -385,3 +385,34 @@ class BibliotecaApp:
                 if usuario and libro:
                     activos.append((prestamo, usuario, libro))
         return activos
+    
+
+# Funciones de utilidad para la interfaz de consola
+def limpiar_pantalla():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+def pausar():
+    input("\nPresiona Enter para continuar...")
+
+def mostrar_titulo(titulo):
+    limpiar_pantalla()
+    print("=" * 60)
+    print(f"{titulo:^60}")
+    print("=" * 60)
+    print()
+
+def mostrar_menu(opciones, titulo):
+    mostrar_titulo(titulo)
+    for i, opcion in enumerate(opciones, 1):
+        print(f"{i}. {opcion}")
+    print("\n0. Volver")
+    
+    while True:
+        try:
+            seleccion = int(input("\nSelecciona una opción: "))
+            if 0 <= seleccion <= len(opciones):
+                return seleccion
+            else:
+                print("Opción no válida. Intenta de nuevo.")
+        except ValueError:
+            print("Por favor, ingresa un número.")
