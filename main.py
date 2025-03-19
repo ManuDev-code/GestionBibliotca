@@ -416,3 +416,408 @@ def mostrar_menu(opciones, titulo):
                 print("Opción no válida. Intenta de nuevo.")
         except ValueError:
             print("Por favor, ingresa un número.")
+            
+# Funciones para los menús de la aplicación
+def menu_principal(app):
+    while True:
+        opcion = mostrar_menu([
+            "Gestión de Usuarios",
+            "Gestión de Libros",
+            "Gestión de Préstamos",
+            "Salir"
+        ], "SISTEMA DE GESTIÓN DE BIBLIOTECA")
+        
+        if opcion == 1:
+            menu_usuarios(app)
+        elif opcion == 2:
+            menu_libros(app)
+        elif opcion == 3:
+            menu_prestamos(app)
+        elif opcion == 4 or opcion == 0:
+            limpiar_pantalla()
+            print("¡Gracias por usar el Sistema de Gestión de Biblioteca!")
+            break
+
+def menu_usuarios(app):
+    while True:
+        opcion = mostrar_menu([
+            "Ver todos los usuarios",
+            "Buscar usuario",
+            "Agregar usuario",
+            "Editar usuario",
+            "Eliminar usuario"
+        ], "GESTIÓN DE USUARIOS")
+        
+        if opcion == 1:
+            mostrar_titulo("LISTA DE USUARIOS")
+            if not app.usuarios:
+                print("No hay usuarios registrados.")
+            else:
+                for usuario in app.usuarios:
+                    print(f"{usuario}")
+            pausar()
+        
+        elif opcion == 2:
+            mostrar_titulo("BUSCAR USUARIO")
+            termino = input("Ingresa término de búsqueda: ")
+            resultados = app.buscar_usuario(termino)
+            
+            if not resultados:
+                print("No se encontraron usuarios.")
+            else:
+                print(f"\nSe encontraron {len(resultados)} usuarios:")
+                for usuario in resultados:
+                    print(f"{usuario}")
+            pausar()
+        
+        elif opcion == 3:
+            mostrar_titulo("AGREGAR USUARIO")
+            nombre = input("Nombre: ")
+            email = input("Email: ")
+            telefono = input("Teléfono: ")
+            
+            if nombre and email:
+                usuario = app.agregar_usuario(nombre, email, telefono)
+                print(f"\nUsuario agregado correctamente:\n{usuario}")
+            else:
+                print("\nError: Nombre y email son obligatorios.")
+            pausar()
+        
+        elif opcion == 4:
+            mostrar_titulo("EDITAR USUARIO")
+            if not app.usuarios:
+                print("No hay usuarios registrados.")
+                pausar()
+                continue
+            
+            print("Usuarios disponibles:")
+            for usuario in app.usuarios:
+                print(f"ID: {usuario.id} | Nombre: {usuario.nombre} | Email: {usuario.email}")
+            
+            try:
+                id_usuario = int(input("\nIngresa el ID del usuario a editar (0 para cancelar): "))
+                if id_usuario == 0:
+                    continue
+                
+                usuario = app.obtener_usuario_por_id(id_usuario)
+                if usuario:
+                    print(f"\nEditando usuario: {usuario}")
+                    
+                    nombre = input(f"Nombre [{usuario.nombre}]: ") or usuario.nombre
+                    email = input(f"Email [{usuario.email}]: ") or usuario.email
+                    telefono = input(f"Teléfono [{usuario.telefono}]: ") or usuario.telefono
+                    
+                    if app.actualizar_usuario(usuario.id, nombre, email, telefono):
+                        print("\nUsuario actualizado correctamente.")
+                    else:
+                        print("\nError al actualizar el usuario.")
+                else:
+                    print("\nUsuario no encontrado.")
+            except ValueError:
+                print("\nPor favor, ingresa un número válido.")
+            pausar()
+        
+        elif opcion == 5:
+            mostrar_titulo("ELIMINAR USUARIO")
+            if not app.usuarios:
+                print("No hay usuarios registrados.")
+                pausar()
+                continue
+            
+            print("Usuarios disponibles:")
+            for usuario in app.usuarios:
+                print(f"ID: {usuario.id} | Nombre: {usuario.nombre} | Email: {usuario.email}")
+            
+            try:
+                id_usuario = int(input("\nIngresa el ID del usuario a eliminar (0 para cancelar): "))
+                if id_usuario == 0:
+                    continue
+                
+                usuario = app.obtener_usuario_por_id(id_usuario)
+                if usuario:
+                    confirmacion = input(f"¿Estás seguro de eliminar a {usuario.nombre}? (s/n): ")
+                    if confirmacion.lower() == 's':
+                        if app.eliminar_usuario(usuario.id):
+                            print("\nUsuario eliminado correctamente.")
+                        else:
+                            print("\nError al eliminar el usuario.")
+                else:
+                    print("\nUsuario no encontrado.")
+            except ValueError:
+                print("\nPor favor, ingresa un número válido.")
+            pausar()
+        
+        elif opcion == 0:
+            break
+
+def menu_libros(app):
+    while True:
+        opcion = mostrar_menu([
+            "Ver todos los libros",
+            "Buscar libro",
+            "Agregar libro",
+            "Editar libro",
+            "Eliminar libro"
+        ], "GESTIÓN DE LIBROS")
+        
+        if opcion == 1:
+            mostrar_titulo("LISTA DE LIBROS")
+            if not app.libros:
+                print("No hay libros registrados.")
+            else:
+                for libro in app.libros:
+                    print(f"{libro}")
+            pausar()
+        
+        elif opcion == 2:
+            mostrar_titulo("BUSCAR LIBRO")
+            termino = input("Ingresa término de búsqueda: ")
+            resultados = app.buscar_libro(termino)
+            
+            if not resultados:
+                print("No se encontraron libros.")
+            else:
+                print(f"\nSe encontraron {len(resultados)} libros:")
+                for libro in resultados:
+                    print(f"{libro}")
+            pausar()
+        
+        elif opcion == 3:
+            mostrar_titulo("AGREGAR LIBRO")
+            titulo = input("Título: ")
+            autor = input("Autor: ")
+            isbn = input("ISBN: ")
+            descripcion = input("Descripción: ")
+            
+            if titulo and autor:
+                libro = app.agregar_libro(titulo, autor, isbn, descripcion)
+                print(f"\nLibro agregado correctamente:\n{libro}")
+            else:
+                print("\nError: Título y autor son obligatorios.")
+            pausar()
+        
+        elif opcion == 4:
+            mostrar_titulo("EDITAR LIBRO")
+            if not app.libros:
+                print("No hay libros registrados.")
+                pausar()
+                continue
+            
+            print("Libros disponibles:")
+            for libro in app.libros:
+                print(f"ID: {libro.id} | Título: {libro.titulo} | Autor: {libro.autor}")
+            
+            try:
+                id_libro = int(input("\nIngresa el ID del libro a editar (0 para cancelar): "))
+                if id_libro == 0:
+                    continue
+                
+                libro = app.obtener_libro_por_id(id_libro)
+                if libro:
+                    print(f"\nEditando libro: {libro}")
+                    
+                    titulo = input(f"Título [{libro.titulo}]: ") or libro.titulo
+                    autor = input(f"Autor [{libro.autor}]: ") or libro.autor
+                    isbn = input(f"ISBN [{libro.isbn}]: ") or libro.isbn
+                    descripcion = input(f"Descripción [{libro.descripcion}]: ") or libro.descripcion
+                    
+                    if app.actualizar_libro(libro.id, titulo, autor, isbn, descripcion):
+                        print("\nLibro actualizado correctamente.")
+                    else:
+                        print("\nError al actualizar el libro.")
+                else:
+                    print("\nLibro no encontrado.")
+            except ValueError:
+                print("\nPor favor, ingresa un número válido.")
+            pausar()
+        
+        elif opcion == 5:
+            mostrar_titulo("ELIMINAR LIBRO")
+            if not app.libros:
+                print("No hay libros registrados.")
+                pausar()
+                continue
+            
+            print("Libros disponibles:")
+            for libro in app.libros:
+                print(f"ID: {libro.id} | Título: {libro.titulo} | Autor: {libro.autor}")
+            
+            try:
+                id_libro = int(input("\nIngresa el ID del libro a eliminar (0 para cancelar): "))
+                if id_libro == 0:
+                    continue
+                
+                libro = app.obtener_libro_por_id(id_libro)
+                if libro:
+                    confirmacion = input(f"¿Estás seguro de eliminar '{libro.titulo}'? (s/n): ")
+                    if confirmacion.lower() == 's':
+                        if app.eliminar_libro(libro.id):
+                            print("\nLibro eliminado correctamente.")
+                        else:
+                            print("\nError al eliminar el libro.")
+                else:
+                    print("\nLibro no encontrado.")
+            except ValueError:
+                print("\nPor favor, ingresa un número válido.")
+            pausar()
+        
+        elif opcion == 0:
+            break
+
+def menu_prestamos(app):
+    while True:
+        opcion = mostrar_menu([
+            "Ver todos los préstamos",
+            "Ver préstamos activos",
+            "Buscar préstamo",
+            "Registrar préstamo",
+            "Devolver libro"
+        ], "GESTIÓN DE PRÉSTAMOS")
+        
+        if opcion == 1:
+            mostrar_titulo("LISTA DE PRÉSTAMOS")
+            if not app.prestamos:
+                print("No hay préstamos registrados.")
+            else:
+                for prestamo in app.prestamos:
+                    usuario = app.obtener_usuario_por_id(prestamo.usuario_id)
+                    libro = app.obtener_libro_por_id(prestamo.libro_id)
+                    
+                    usuario_nombre = usuario.nombre if usuario else "Usuario desconocido"
+                    libro_titulo = libro.titulo if libro else "Libro desconocido"
+                    
+                    estado = "Devuelto" if prestamo.devuelto else "Prestado"
+                    fecha_dev = prestamo.fecha_devolucion if prestamo.fecha_devolucion else "Pendiente"
+                    
+                    print(f"ID: {prestamo.id} | Usuario: {usuario_nombre} | Libro: {libro_titulo} | Fecha préstamo: {prestamo.fecha_prestamo} | Fecha devolución: {fecha_dev} | Estado: {estado}")
+            pausar()
+        
+        elif opcion == 2:
+            mostrar_titulo("PRÉSTAMOS ACTIVOS")
+            activos = app.listar_prestamos_activos()
+            
+            if not activos:
+                print("No hay préstamos activos.")
+            else:
+                for prestamo, usuario, libro in activos:
+                    print(f"ID: {prestamo.id} | Usuario: {usuario.nombre} | Libro: {libro.titulo} | Fecha préstamo: {prestamo.fecha_prestamo}")
+            pausar()
+        
+        elif opcion == 3:
+            mostrar_titulo("BUSCAR PRÉSTAMO")
+            termino = input("Ingresa término de búsqueda (nombre de usuario, título de libro o ID): ")
+            resultados = app.buscar_prestamo(termino)
+            
+            if not resultados:
+                print("No se encontraron préstamos.")
+            else:
+                print(f"\nSe encontraron {len(resultados)} préstamos:")
+                for prestamo, usuario, libro in resultados:
+                    estado = "Devuelto" if prestamo.devuelto else "Prestado"
+                    fecha_dev = prestamo.fecha_devolucion if prestamo.fecha_devolucion else "Pendiente"
+                    
+                    print(f"ID: {prestamo.id} | Usuario: {usuario.nombre} | Libro: {libro.titulo} | Fecha préstamo: {prestamo.fecha_prestamo} | Fecha devolución: {fecha_dev} | Estado: {estado}")
+            pausar()
+        
+        elif opcion == 4:
+            mostrar_titulo("REGISTRAR PRÉSTAMO")
+            
+            # Verificar que hay usuarios y libros disponibles
+            if not app.usuarios:
+                print("No hay usuarios registrados. Registra un usuario primero.")
+                pausar()
+                continue
+            
+            libros_disponibles = [l for l in app.libros if l.disponible]
+            if not libros_disponibles:
+                print("No hay libros disponibles para préstamo.")
+                pausar()
+                continue
+            
+            # Mostrar usuarios
+            print("Usuarios disponibles:")
+            for usuario in app.usuarios:
+                print(f"ID: {usuario.id} | Nombre: {usuario.nombre} | Email: {usuario.email}")
+            
+            try:
+                id_usuario = int(input("\nIngresa el ID del usuario (0 para cancelar): "))
+                if id_usuario == 0:
+                    continue
+                
+                usuario = app.obtener_usuario_por_id(id_usuario)
+                if not usuario:
+                    print("\nUsuario no encontrado.")
+                    pausar()
+                    continue
+                
+                # Mostrar libros disponibles
+                print("\nLibros disponibles:")
+                for libro in libros_disponibles:
+                    print(f"ID: {libro.id} | Título: {libro.titulo} | Autor: {libro.autor}")
+                
+                id_libro = int(input("\nIngresa el ID del libro (0 para cancelar): "))
+                if id_libro == 0:
+                    continue
+                
+                libro = app.obtener_libro_por_id(id_libro)
+                if not libro:
+                    print("\nLibro no encontrado.")
+                    pausar()
+                    continue
+                
+                if not libro.disponible:
+                    print("\nEste libro no está disponible para préstamo.")
+                    pausar()
+                    continue
+                
+                # Fecha de préstamo (opcional)
+                fecha_prestamo = input("\nFecha de préstamo (YYYY-MM-DD) [hoy]: ")
+                if not fecha_prestamo:
+                    fecha_prestamo = None
+                
+                # Registrar préstamo
+                prestamo = app.registrar_prestamo(usuario.id, libro.id, fecha_prestamo)
+                if prestamo:
+                    print(f"\nPréstamo registrado correctamente:")
+                    print(f"ID: {prestamo.id} | Usuario: {usuario.nombre} | Libro: {libro.titulo} | Fecha: {prestamo.fecha_prestamo}")
+                
+            except ValueError:
+                print("\nPor favor, ingresa un número válido.")
+            pausar()
+        
+        elif opcion == 5:
+            mostrar_titulo("DEVOLVER LIBRO")
+            
+            # Listar préstamos activos
+            activos = app.listar_prestamos_activos()
+            
+            if not activos:
+                print("No hay préstamos activos para devolver.")
+                pausar()
+                continue
+            
+            print("Préstamos activos:")
+            for prestamo, usuario, libro in activos:
+                print(f"ID: {prestamo.id} | Usuario: {usuario.nombre} | Libro: {libro.titulo} | Fecha préstamo: {prestamo.fecha_prestamo}")
+            
+            try:
+                id_prestamo = int(input("\nIngresa el ID del préstamo a devolver (0 para cancelar): "))
+                if id_prestamo == 0:
+                    continue
+                
+                prestamo = app.obtener_prestamo_por_id(id_prestamo)
+                if prestamo and not prestamo.devuelto:
+                    if app.devolver_libro(prestamo.id):
+                        libro = app.obtener_libro_por_id(prestamo.libro_id)
+                        titulo_libro = libro.titulo if libro else "desconocido"
+                        print(f"\nLibro '{titulo_libro}' devuelto correctamente.")
+                    else:
+                        print("\nError al devolver el libro.")
+                else:
+                    print("\nPréstamo no encontrado o ya devuelto.")
+            except ValueError:
+                print("\nPor favor, ingresa un número válido.")
+            pausar()
+        
+        elif opcion == 0:
+            break
